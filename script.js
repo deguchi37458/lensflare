@@ -1,5 +1,6 @@
 import * as THREE from "./build/three.module.js";
 import {FlyControls} from "./jsm/controls/FlyControls.js";
+import {Lensflare, LensflareElement} from "./jsm/objects/Lensflare.js";
 
 let camera, scene, renderer;
 let controls;
@@ -49,6 +50,11 @@ function init(){
     const dirLight = new THREE.DirectionalLight(0xffffff, 0.03);
     scene.add(dirLight);
 
+    // レンズフレア
+    const textureLoader = new THREE.TextureLoader();
+
+    const textureFlare = textureLoader.load("./textures/LensFlare.png");
+
     addLight(0.08, 0.3, 0.9 ,0 ,0 ,-1000)
 
     // ポイント光源
@@ -57,11 +63,20 @@ function init(){
         light.color.setHSL(h,s,l);
         light.position.set(x,y,z);
         scene.add(light);
+
+        const lensflare = new Lensflare();
+        lensflare.addElement(
+            new LensflareElement(textureFlare, 700, 0, light.color)
+        );
+
+        scene.add(lensflare);
+
     }
 
     //renderer
     renderer = new THREE.WebGLRenderer();
     renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.outputEncoding = THREE.sRGBEncoding;
     document.body.appendChild(renderer.domElement);
     
     //マウス操作
